@@ -493,15 +493,37 @@ const exerciseSets = [
   }
 ];
 
+const reminders = [
+  { text: "Скажи: “Господи, прибавь мне знания”", source: "Та-Ха, 20:114" },
+  { text: "Воистину, боятся Аллаха из Его рабов только обладающие знанием", source: "Фатыр, 35:28" },
+  { text: "Скажи: “Разве равны те, которые знают, и те, которые не знают?”", source: "Зумар, 39:9" },
+  { text: "И над каждым обладающим знанием есть более знающий", source: "Юсуф, 12:76" },
+  { text: "Кому Аллах желает блага, того Он наделяет пониманием в религии", source: "Бухари, Муслим" },
+  { text: "Тот, кто идёт по пути в поисках знания, Аллах облегчит ему путь в Рай", source: "Муслим" },
+  { text: "Лучший из вас тот, кто изучил Коран и обучил ему других", source: "Бухари" },
+  { text: "Поистине, Аллах не забирает знание, вырывая его из сердец людей, но забирает знание, забирая учёных", source: "Бухари, Муслим" },
+  { text: "Кто указал на благое, тому — награда подобная награде совершившего его", source: "Муслим" },
+  { text: "Знание — не то, что ты запомнил, а то, что принесло тебе пользу", source: "Имам аш-Шафии" },
+  { text: "Кто не вкусил унижения учёбы хотя бы час — тот проведёт всю жизнь в унижении невежества", source: "Имам аш-Шафии" },
+  { text: "Одна задача учёного умнее тысячи задач невежды", source: "Ибн аль-Каййим" },
+  { text: "Знание — самое благородное из того, чем может заниматься человек", source: "Ибн аль-Каййим" },
+  { text: "Кто желает мира этого — пусть берёт знание, кто желает мира вечного — пусть берёт знание", source: "Имам аш-Шафии" },
+  { text: "Знание не приобретается расслаблением тела", source: "Яхья ибн Аби Касир" }
+];
+
 const els = {
   topicSelect: document.querySelector("#topicSelect"),
   searchInput: document.querySelector("#searchInput"),
+  reminderText: document.querySelector("#reminderText"),
+  reminderSource: document.querySelector("#reminderSource"),
+  nextReminder: document.querySelector("#nextReminder"),
   knownCount: document.querySelector("#knownCount"),
   repeatCount: document.querySelector("#repeatCount"),
   cardTopic: document.querySelector("#cardTopic"),
   cardCounter: document.querySelector("#cardCounter"),
   cardArabic: document.querySelector("#cardArabic"),
   cardRussian: document.querySelector("#cardRussian"),
+  shuffleCards: document.querySelector("#shuffleCards"),
   showAnswer: document.querySelector("#showAnswer"),
   againButton: document.querySelector("#againButton"),
   knowButton: document.querySelector("#knowButton"),
@@ -514,6 +536,7 @@ const els = {
   writeInput: document.querySelector("#writeInput"),
   checkWrite: document.querySelector("#checkWrite"),
   revealWrite: document.querySelector("#revealWrite"),
+  nextWrite: document.querySelector("#nextWrite"),
   writeFeedback: document.querySelector("#writeFeedback"),
   dictionaryList: document.querySelector("#dictionaryList"),
   pronounTable: document.querySelector("#pronounTable"),
@@ -531,9 +554,12 @@ const els = {
 const state = {
   activeView: "cards",
   cardIndex: 0,
+  cardOrder: [],
+  cardOrderKey: "",
   quizWord: null,
   writeWord: null,
   exerciseItem: null,
+  reminderIndex: Number(localStorage.getItem("arabicTrainerReminderIndex") || "0"),
   progress: JSON.parse(localStorage.getItem("arabicTrainerProgress") || "{}")
 };
 
@@ -555,8 +581,29 @@ function filteredWords() {
   });
 }
 
-function currentWord() {
+function filterKey() {
+  return `${els.topicSelect.value}::${els.searchInput.value.trim().toLowerCase()}`;
+}
+
+function orderedCardWords() {
   const list = filteredWords();
+  const key = filterKey();
+  if (state.cardOrderKey !== key) {
+    state.cardOrderKey = key;
+    state.cardOrder = [];
+    state.cardIndex = 0;
+  }
+
+  if (!state.cardOrder.length) return list;
+
+  const byArabic = new Map(list.map((word) => [word.ar, word]));
+  const ordered = state.cardOrder.map((arabic) => byArabic.get(arabic)).filter(Boolean);
+  const missing = list.filter((word) => !state.cardOrder.includes(word.ar));
+  return [...ordered, ...missing];
+}
+
+function currentWord() {
+  const list = orderedCardWords();
   if (!list.length) return null;
   state.cardIndex = ((state.cardIndex % list.length) + list.length) % list.length;
   return list[state.cardIndex];
@@ -576,6 +623,14 @@ function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
+function shuffleCards() {
+  const list = filteredWords();
+  state.cardOrderKey = filterKey();
+  state.cardOrder = shuffle(list).map((word) => word.ar);
+  state.cardIndex = 0;
+  renderCard();
+}
+
 function updateStats() {
   const values = Object.values(state.progress);
   els.knownCount.textContent = values.filter((value) => value === "known").length;
@@ -583,7 +638,7 @@ function updateStats() {
 }
 
 function renderCard() {
-  const list = filteredWords();
+  const list = orderedCardWords();
   const word = currentWord();
   if (!word) {
     els.cardTopic.textContent = "Нет слов";
@@ -595,7 +650,7 @@ function renderCard() {
   }
 
   els.cardTopic.textContent = word.topic;
-  els.cardCounter.textContent = `${state.cardIndex + 1} / ${list.length}`;
+  els.cardCounter.textContent = `${state.cardIndex + 1} / ${list.length}${state.cardOrder.length ? " · перемешано" : ""}`;
   els.cardArabic.textContent = word.ar;
   els.cardRussian.textContent = word.ru;
   els.cardRussian.classList.add("hidden");
@@ -658,6 +713,14 @@ function renderWrite() {
   els.writeInput.focus();
 }
 
+function renderReminder(next = false) {
+  if (next) state.reminderIndex += 1;
+  const reminder = reminders[((state.reminderIndex % reminders.length) + reminders.length) % reminders.length];
+  els.reminderText.textContent = reminder.text;
+  els.reminderSource.textContent = reminder.source;
+  localStorage.setItem("arabicTrainerReminderIndex", String(state.reminderIndex));
+}
+
 function renderTable(container, headers, rows) {
   container.innerHTML = "";
   const header = document.createElement("div");
@@ -716,6 +779,7 @@ function renderExercise() {
 
 function renderAll() {
   updateStats();
+  renderReminder();
   renderCard();
   renderDictionary();
   if (!state.quizWord) renderQuiz();
@@ -754,6 +818,8 @@ document.querySelectorAll(".nav-button").forEach((button) => {
 
 els.topicSelect.addEventListener("change", () => {
   state.cardIndex = 0;
+  state.cardOrder = [];
+  state.cardOrderKey = "";
   state.quizWord = null;
   state.writeWord = null;
   renderAll();
@@ -761,12 +827,18 @@ els.topicSelect.addEventListener("change", () => {
 
 els.searchInput.addEventListener("input", () => {
   state.cardIndex = 0;
+  state.cardOrder = [];
+  state.cardOrderKey = "";
   state.quizWord = null;
   state.writeWord = null;
   renderAll();
 });
 
+els.nextReminder.addEventListener("click", () => renderReminder(true));
+
 els.showAnswer.addEventListener("click", () => els.cardRussian.classList.remove("hidden"));
+
+els.shuffleCards.addEventListener("click", shuffleCards);
 
 els.nextButton.addEventListener("click", () => {
   state.cardIndex += 1;
@@ -800,6 +872,8 @@ els.nextQuiz.addEventListener("click", renderQuiz);
 els.exerciseSelect.addEventListener("change", renderExercise);
 
 els.nextExercise.addEventListener("click", renderExercise);
+
+els.nextWrite.addEventListener("click", renderWrite);
 
 els.checkWrite.addEventListener("click", () => {
   const answer = normalizeArabic(els.writeInput.value);
