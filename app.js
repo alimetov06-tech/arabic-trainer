@@ -714,6 +714,7 @@ function renderWrite() {
 }
 
 function renderReminder(next = false) {
+  if (!els.reminderText || !els.reminderSource) return;
   if (next) state.reminderIndex += 1;
   const reminder = reminders[((state.reminderIndex % reminders.length) + reminders.length) % reminders.length];
   els.reminderText.textContent = reminder.text;
@@ -722,6 +723,7 @@ function renderReminder(next = false) {
 }
 
 function renderTable(container, headers, rows) {
+  if (!container) return;
   container.innerHTML = "";
   const header = document.createElement("div");
   header.className = "mini-row header";
@@ -741,16 +743,18 @@ function renderTable(container, headers, rows) {
 }
 
 function renderGrammarTables() {
+  if (!els.pronounTable || !els.possessiveTable || !els.pastTable) return;
   renderTable(els.pronounTable, ["Лицо", "Число", "Форма"], pronounRows.map(([person, number, arabic, russian]) => [person, number, `${arabic} — ${russian}`]));
   renderTable(els.possessiveTable, ["Значение", "Окончание", "Пример"], possessiveRows);
   renderTable(els.pastTable, ["Значение", "Форма", "Глагол"], pastRows);
 }
 
 function activeExerciseSet() {
-  return exerciseSets.find((set) => set.id === els.exerciseSelect.value) || exerciseSets[0];
+  return exerciseSets.find((set) => set.id === els.exerciseSelect?.value) || exerciseSets[0];
 }
 
 function renderExercise() {
+  if (!els.exercisePrompt || !els.exerciseQuestion || !els.exerciseOptions || !els.exerciseFeedback) return;
   const set = activeExerciseSet();
   const item = set.items[Math.floor(Math.random() * set.items.length)];
   state.exerciseItem = item;
@@ -794,12 +798,14 @@ topics().forEach((topic) => {
   els.topicSelect.append(option);
 });
 
-exerciseSets.forEach((set) => {
-  const option = document.createElement("option");
-  option.value = set.id;
-  option.textContent = set.title;
-  els.exerciseSelect.append(option);
-});
+if (els.exerciseSelect) {
+  exerciseSets.forEach((set) => {
+    const option = document.createElement("option");
+    option.value = set.id;
+    option.textContent = set.title;
+    els.exerciseSelect.append(option);
+  });
+}
 
 renderGrammarTables();
 
@@ -834,11 +840,11 @@ els.searchInput.addEventListener("input", () => {
   renderAll();
 });
 
-els.nextReminder.addEventListener("click", () => renderReminder(true));
+els.nextReminder?.addEventListener("click", () => renderReminder(true));
 
 els.showAnswer.addEventListener("click", () => els.cardRussian.classList.remove("hidden"));
 
-els.shuffleCards.addEventListener("click", shuffleCards);
+els.shuffleCards?.addEventListener("click", shuffleCards);
 
 els.nextButton.addEventListener("click", () => {
   state.cardIndex += 1;
@@ -869,11 +875,11 @@ els.knowButton.addEventListener("click", () => {
 
 els.nextQuiz.addEventListener("click", renderQuiz);
 
-els.exerciseSelect.addEventListener("change", renderExercise);
+els.exerciseSelect?.addEventListener("change", renderExercise);
 
-els.nextExercise.addEventListener("click", renderExercise);
+els.nextExercise?.addEventListener("click", renderExercise);
 
-els.nextWrite.addEventListener("click", renderWrite);
+els.nextWrite?.addEventListener("click", renderWrite);
 
 els.checkWrite.addEventListener("click", () => {
   const answer = normalizeArabic(els.writeInput.value);

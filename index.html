@@ -47,6 +47,15 @@
           <button id="resetProgress" class="ghost-button" type="button">Сбросить прогресс</button>
         </div>
 
+        <section class="reminder-strip" aria-label="Напоминание">
+          <div>
+            <p class="eyebrow">Напоминание</p>
+            <blockquote id="reminderText"></blockquote>
+            <span id="reminderSource"></span>
+          </div>
+          <button id="nextReminder" class="ghost-button" type="button">Другое</button>
+        </section>
+
         <section id="cardsView" class="view active" aria-label="Карточки">
           <div class="study-card">
             <div class="card-topline">
@@ -57,6 +66,7 @@
             <div id="cardRussian" class="translation hidden"></div>
             <button id="showAnswer" class="primary-button" type="button">Показать перевод</button>
             <div class="card-actions">
+              <button id="shuffleCards" type="button">Перемешать</button>
               <button id="againButton" type="button">Повторить</button>
               <button id="knowButton" type="button">Знаю</button>
               <button id="nextButton" type="button">Следующее</button>
@@ -84,6 +94,7 @@
             <div class="write-actions">
               <button id="checkWrite" class="primary-button" type="button">Проверить</button>
               <button id="revealWrite" type="button">Показать ответ</button>
+              <button id="nextWrite" type="button">Следующее слово</button>
             </div>
             <p id="writeFeedback" class="feedback" aria-live="polite"></p>
           </div>

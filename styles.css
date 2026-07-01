@@ -8,6 +8,7 @@
   --accent: #0f766e;
   --accent-strong: #134e4a;
   --gold: #b7791f;
+  --sky: #2f80a0;
   --rose: #b4234a;
   --shadow: 0 18px 50px rgba(38, 45, 54, 0.12);
 }
@@ -22,7 +23,8 @@ body {
   color: var(--ink);
   background:
     radial-gradient(circle at 10% 0%, rgba(15, 118, 110, 0.12), transparent 30rem),
-    linear-gradient(135deg, rgba(183, 121, 31, 0.10) 0 1px, transparent 1px 16px),
+    radial-gradient(circle at 90% 12%, rgba(47, 128, 160, 0.12), transparent 24rem),
+    linear-gradient(135deg, rgba(183, 121, 31, 0.09) 0 1px, transparent 1px 16px),
     var(--paper);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -163,6 +165,36 @@ input {
   background: transparent;
 }
 
+.reminder-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 18px 20px;
+  border: 1px solid rgba(15, 118, 110, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(240, 249, 247, 0.92)),
+    var(--panel);
+  box-shadow: 0 10px 30px rgba(38, 45, 54, 0.08);
+}
+
+.reminder-strip blockquote {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.reminder-strip span {
+  display: block;
+  margin-top: 8px;
+  color: var(--gold);
+  font-weight: 800;
+}
+
 .view {
   display: none;
 }
@@ -189,6 +221,24 @@ input {
   justify-items: center;
   gap: 20px;
   text-align: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 253, 252, 0.92)),
+    var(--panel);
+  position: relative;
+  overflow: hidden;
+}
+
+.study-card::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(183, 121, 31, 0.22);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.study-card > * {
+  position: relative;
 }
 
 .card-topline {
@@ -236,10 +286,14 @@ input {
 }
 
 .card-actions button:first-child {
-  color: var(--rose);
+  color: var(--sky);
 }
 
 .card-actions button:nth-child(2) {
+  color: var(--rose);
+}
+
+.card-actions button:nth-child(3) {
   color: var(--accent-strong);
 }
 
@@ -464,6 +518,10 @@ input {
   }
 
   .controls {
+    grid-template-columns: 1fr;
+  }
+
+  .reminder-strip {
     grid-template-columns: 1fr;
   }
 
