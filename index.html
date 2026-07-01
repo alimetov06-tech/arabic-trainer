@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Арабский тренажёр</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Арабский язык</p>
+        <h1>Тренажёр слов и правил</h1>
+      </div>
+      <div class="stats" aria-label="Прогресс">
+        <div>
+          <span id="knownCount">0</span>
+          <small>знаю</small>
+        </div>
+        <div>
+          <span id="repeatCount">0</span>
+          <small>повторить</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar" aria-label="Разделы">
+        <button class="nav-button active" data-view="cards">Карточки</button>
+        <button class="nav-button" data-view="quiz">Тест</button>
+        <button class="nav-button" data-view="write">Написание</button>
+        <button class="nav-button" data-view="dictionary">Словарь</button>
+        <button class="nav-button" data-view="rules">Правила</button>
+        <button class="nav-button" data-view="exercises">Упражнения</button>
+      </aside>
+
+      <section class="workspace">
+        <div class="controls">
+          <label>
+            Тема
+            <select id="topicSelect"></select>
+          </label>
+          <label class="search-wrap">
+            Поиск
+            <input id="searchInput" type="search" placeholder="арабское слово или перевод">
+          </label>
+          <button id="resetProgress" class="ghost-button" type="button">Сбросить прогресс</button>
+        </div>
+
+        <section id="cardsView" class="view active" aria-label="Карточки">
+          <div class="study-card">
+            <div class="card-topline">
+              <span id="cardTopic"></span>
+              <span id="cardCounter"></span>
+            </div>
+            <div id="cardArabic" class="arabic" dir="rtl"></div>
+            <div id="cardRussian" class="translation hidden"></div>
+            <button id="showAnswer" class="primary-button" type="button">Показать перевод</button>
+            <div class="card-actions">
+              <button id="againButton" type="button">Повторить</button>
+              <button id="knowButton" type="button">Знаю</button>
+              <button id="nextButton" type="button">Следующее</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="quizView" class="view" aria-label="Тест">
+          <div class="quiz-panel">
+            <div class="question">
+              <span>Выбери перевод</span>
+              <strong id="quizArabic" class="arabic" dir="rtl"></strong>
+            </div>
+            <div id="quizOptions" class="options"></div>
+            <p id="quizFeedback" class="feedback" aria-live="polite"></p>
+            <button id="nextQuiz" class="primary-button" type="button">Следующий вопрос</button>
+          </div>
+        </section>
+
+        <section id="writeView" class="view" aria-label="Написание">
+          <div class="write-panel">
+            <p class="prompt">Напиши по-арабски:</p>
+            <h2 id="writeRussian"></h2>
+            <input id="writeInput" class="arabic-input" dir="rtl" autocomplete="off" spellcheck="false">
+            <div class="write-actions">
+              <button id="checkWrite" class="primary-button" type="button">Проверить</button>
+              <button id="revealWrite" type="button">Показать ответ</button>
+            </div>
+            <p id="writeFeedback" class="feedback" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section id="dictionaryView" class="view" aria-label="Словарь">
+          <div id="dictionaryList" class="dictionary"></div>
+        </section>
+
+        <section id="rulesView" class="view" aria-label="Правила">
+          <div class="rules-grid">
+            <article>
+              <h2>Предлоги и касра</h2>
+              <p>После предлогов слово обычно получает касру: <strong>فِي البَيْتِ</strong>, <strong>مِنَ البَيْتِ</strong>, <strong>إِلَى البَيْتِ</strong>, <strong>عَلَى البَيْتِ</strong>.</p>
+            </article>
+            <article>
+              <h2>Артикль ال</h2>
+              <p><strong>بَيْتٌ</strong> — какой-то дом. <strong>البَيْتُ</strong> — известный нам дом. С артиклем слово теряет танвин.</p>
+            </article>
+            <article>
+              <h2>Алиф в артикле</h2>
+              <p>Если чтение начинается с артикля, алиф читается: <strong>البَيْتُ</strong>. Если перед ним есть слово, читается только лям: <strong>مِنَ البَيْتِ</strong>.</p>
+            </article>
+            <article>
+              <h2>Идафа</h2>
+              <p>Идафа — сочетание двух существительных: <strong>كِتَابُ طَالِبٍ</strong> — книга студента. Первое слово без <strong>ال</strong> и без танвина, второе в родительном падеже.</p>
+            </article>
+            <article>
+              <h2>Идафа с определённостью</h2>
+              <p><strong>كِتَابُ الطَّالِبِ</strong> — книга студента, которого мы знаем. Вся идафа становится определённой из-за второго слова.</p>
+            </article>
+            <article>
+              <h2>Слитные местоимения</h2>
+              <p>Окончания присоединяются к слову и показывают владельца: <strong>كِتَابِي</strong> — моя книга, <strong>كِتَابُكَ</strong> — твоя книга, <strong>كِتَابُهُ</strong> — его книга.</p>
+            </article>
+            <article>
+              <h2>Двойственное число</h2>
+              <p>В именительном падеже добавляется <strong>ـانِ</strong>: <strong>كِتَابَانِ</strong>. В родительном и винительном падежах добавляется <strong>ـيْنِ</strong>: <strong>فِي كِتَابَيْنِ</strong>.</p>
+            </article>
+            <article>
+              <h2>Прошедшее время</h2>
+              <p>У глагола меняется окончание: <strong>كَتَبَ</strong> — он написал, <strong>كَتَبَتْ</strong> — она написала, <strong>كَتَبْتُ</strong> — я написал.</p>
+            </article>
+            <article>
+              <h2>Форма запрета</h2>
+              <p>Запрет строится через <strong>لَا</strong>: <strong>تَذْهَبُ</strong> — ты идёшь, <strong>لَا تَذْهَبْ</strong> — не иди.</p>
+            </article>
+            <article>
+              <h2>لِـ: для / чтобы</h2>
+              <p>Перед существительным <strong>لِـ</strong> значит “для”: <strong>لِمُحَمَّدٍ</strong>. Перед глаголом — “чтобы”: <strong>لِيَذْهَبَ</strong>.</p>
+            </article>
+            <article>
+              <h2>Время и падеж</h2>
+              <p><strong>أَمْسِ</strong>, <strong>اليَوْمَ</strong>, <strong>غَدًا</strong> не меняют следующее слово. <strong>قَبْلَ</strong>, <strong>بَعْدَ</strong>, <strong>خِلَالَ</strong> ставят следующее слово в родительный падеж.</p>
+            </article>
+            <article>
+              <h2>Вопрос “который час?”</h2>
+              <p><strong>كَمِ السَّاعَةُ؟</strong> — который час? После <strong>كَمْ</strong> в этом вопросе слово остаётся определённым.</p>
+            </article>
+          </div>
+
+          <div class="tables-grid">
+            <article class="table-card">
+              <h2>Местоимения</h2>
+              <div id="pronounTable" class="mini-table"></div>
+            </article>
+            <article class="table-card">
+              <h2>Притяжательные окончания</h2>
+              <div id="possessiveTable" class="mini-table"></div>
+            </article>
+            <article class="table-card wide">
+              <h2>كَتَبَ в прошедшем времени</h2>
+              <div id="pastTable" class="mini-table"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="exercisesView" class="view" aria-label="Упражнения">
+          <div class="exercise-panel">
+            <div class="exercise-top">
+              <label>
+                Тип упражнения
+                <select id="exerciseSelect"></select>
+              </label>
+              <button id="nextExercise" class="primary-button" type="button">Новое задание</button>
+            </div>
+            <p id="exercisePrompt" class="prompt"></p>
+            <div id="exerciseQuestion" class="exercise-question"></div>
+            <div id="exerciseOptions" class="options"></div>
+            <p id="exerciseFeedback" class="feedback" aria-live="polite"></p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
