@@ -48,12 +48,14 @@
         </div>
 
         <section class="reminder-strip" aria-label="Напоминание">
-          <div>
+          <div class="reminder-content">
             <p class="eyebrow">Напоминание</p>
             <blockquote id="reminderText"></blockquote>
-            <span id="reminderSource"></span>
+            <div class="reminder-footer">
+              <span id="reminderSource"></span>
+              <button id="nextReminder" class="ghost-button" type="button">Другое</button>
+            </div>
           </div>
-          <button id="nextReminder" class="ghost-button" type="button">Другое</button>
         </section>
 
         <section id="cardsView" class="view active" aria-label="Карточки">

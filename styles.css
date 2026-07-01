@@ -166,33 +166,50 @@ input {
 }
 
 .reminder-strip {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: center;
   margin-bottom: 14px;
-  padding: 18px 20px;
+  padding: 0;
   border: 1px solid rgba(15, 118, 110, 0.22);
   border-radius: 8px;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(240, 249, 247, 0.92)),
     var(--panel);
   box-shadow: 0 10px 30px rgba(38, 45, 54, 0.08);
+  overflow: hidden;
+}
+
+.reminder-content {
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px;
 }
 
 .reminder-strip blockquote {
+  max-width: 76ch;
   margin: 0;
   color: var(--ink);
-  font-size: clamp(1.05rem, 2vw, 1.45rem);
-  font-weight: 800;
-  line-height: 1.35;
+  font-size: clamp(1rem, 1.35vw, 1.22rem);
+  font-weight: 750;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .reminder-strip span {
   display: block;
-  margin-top: 8px;
   color: var(--gold);
   font-weight: 800;
+}
+
+.reminder-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.reminder-footer .ghost-button {
+  flex: 0 0 auto;
+  min-height: 38px;
 }
 
 .view {
@@ -521,10 +538,6 @@ input {
     grid-template-columns: 1fr;
   }
 
-  .reminder-strip {
-    grid-template-columns: 1fr;
-  }
-
   .study-card,
   .quiz-panel,
   .write-panel,
@@ -563,5 +576,18 @@ input {
 
   .arabic {
     font-size: 3.1rem;
+  }
+
+  .reminder-content {
+    padding: 16px;
+  }
+
+  .reminder-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reminder-footer .ghost-button {
+    width: 100%;
   }
 }
